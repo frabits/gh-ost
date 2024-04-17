@@ -1,0 +1,70 @@
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: gh-ost
+    main: ./go/cmd/gh-ost/main.go
+    binary: gh-ost
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w -X github.com/frabits/gh-ost/go/cmd/gh-ost/main.AppVersion={{ .Version }}
+      - -X github.com/frabits/gh-ost/go/cmd/gh-ost/main.GitCommit={{ .Commit }}
+archives:
+
+nfpms:
+  -
+    id: gh-ost
+    package_name: gh-ost
+    file_name_template: "{{ .ConventionalFileName }}"
+    builds:
+      - gh-ost
+    vendor: Github Inc.
+
+    homepage: https://github.com/github/gh-ost
+
+    maintainer: Frabit Labs
+
+    description: |-
+      The next-gene database automatic platform
+
+    license: GPLv3
+
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/bin
+ 
+    section: default
+    rpm:
+      # RPM specific scripts.
+      scripts:
+      summary: The next-gene database automatic platform
+      group: Unspecified
+      compression: lzma
+
+    deb:
+      scripts:
+      triggers:
+        interest:
+          - some-trigger-name
+        activate:
+          - another-trigger-name
+      breaks:
+        - some-package
+
+      signature:
+        type: origin
+
+checksum:
+  name_template: 'checksum.txt'
+snapshot:
+  name_template: "{{ .Version }}"
+release:
