@@ -175,6 +175,27 @@ func GetInstanceKey(db *gosql.DB) (instanceKey *InstanceKey, err error) {
 	return instanceKey, err
 }
 
+// GetTrxVariableName get real transaction_isolation via a pre-connection, transaction_isolation or tx_isolation
+func GetTrxVariableName(dsn string) string {
+	var trxVariableName string
+	const (
+		transactionIsolation string = "transaction_isolation"
+		txIsolation          string = "tx_isolation"
+	)
+	query := fmt.Sprintf("select @@%s;", txIsolation)
+	db, err := gosql.Open("mysql", dsn)
+	defer func() {
+		db.Close()
+	}()
+	if err != nil {
+		return ""
+	}
+	if err := db.QueryRow(query).Scan(&trxVariableName); err == nil {
+		return txIsolation
+	}
+	return transactionIsolation
+}
+
 // GetTableColumns reads column list from given table
 func GetTableColumns(db *gosql.DB, databaseName, tableName string) (*sql.ColumnList, *sql.ColumnList, error) {
 	query := fmt.Sprintf(`

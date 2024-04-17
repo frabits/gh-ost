@@ -136,7 +136,6 @@ func (this *ConnectionConfig) GetDBUri(databaseName string) string {
 		"interpolateParams=true",
 		fmt.Sprintf("charset=%s", this.Charset),
 		fmt.Sprintf("tls=%s", tlsOption),
-		fmt.Sprintf("transaction_isolation=%q", this.TransactionIsolation),
 		fmt.Sprintf("timeout=%fs", this.Timeout),
 		fmt.Sprintf("readTimeout=%fs", this.Timeout),
 		fmt.Sprintf("writeTimeout=%fs", this.Timeout),
@@ -144,6 +143,9 @@ func (this *ConnectionConfig) GetDBUri(databaseName string) string {
 	if this.WaitTimeout > 0 {
 		connectionParams = append(connectionParams, fmt.Sprintf("wait_timeout=%fs", this.WaitTimeout))
 	}
+	tmpDsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/mysql?", this.User, this.Password, hostname, this.Key.Port)
+	TrxName := GetTrxVariableName(tmpDsn)
+	connectionParams = append(connectionParams, fmt.Sprintf("%s=%q", TrxName, this.TransactionIsolation))
 
 	return fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?%s", this.User, this.Password, hostname, this.Key.Port, databaseName, strings.Join(connectionParams, "&"))
 }
