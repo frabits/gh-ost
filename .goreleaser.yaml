@@ -33,9 +33,9 @@ nfpms:
     maintainer: Frabit Labs
 
     description: |-
-      The next-gene database automatic platform
+      GitHub's Online Schema-migration Tool for MySQL
 
-    license: GPLv3
+    license: MIT
 
     formats:
       - deb
@@ -46,7 +46,7 @@ nfpms:
     rpm:
       # RPM specific scripts.
       scripts:
-      summary: The next-gene database automatic platform
+      summary: GitHub's Online Schema-migration Tool for MySQL
       group: Unspecified
       compression: lzma
 
